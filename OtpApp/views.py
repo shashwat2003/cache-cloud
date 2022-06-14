@@ -5,6 +5,7 @@ from django.conf import settings
 
 from .models import OTP
 from UserApp.views import register
+from UserApp.models import User
 
 from datetime import datetime, timedelta
 # Create your views here.
@@ -13,12 +14,13 @@ def response(obj, code=200):
     return JsonResponse(obj, status=code, safe=False)
 
 def generate(request: HttpRequest):
-    # send_mail(subject="Testing", message="Hello!", from_email=settings.EMAIL_HOST_USER, recipient_list=["shashwat13.8@gmail.com",])
     if request.method != "POST":
         return response({"error":request.method+" NOT ALLOWED!"}, 405)
     POST_DATA = json.loads(request.body)
     mail = POST_DATA["mail"]
     greet = POST_DATA["greet"]
+    if User.objects.filter(email=mail).exists():
+        return response({"error":"Mail Already Registered!"}, 403)
     if OTP.objects.filter(mail=mail).exists():
         OTP.objects.get(mail=mail).delete()
     otp = random.randint(1000, 9999)
@@ -49,21 +51,20 @@ WARNING: This is an auto-generated mail! Please DO-NOT reply to this mail.
 def verify(request: HttpRequest):
     if request.method != "POST":
         return response({"error":request.method+" NOT ALLOWED!"}, 405)
+        
     POST_DATA = json.loads(request.body)
     mail = POST_DATA["mail"]
-    otp = POST_DATA["otp"]
+    otp = int(POST_DATA["otp"])
 
     if OTP.objects.filter(mail=mail).exists():
         if OTP.objects.filter(mail=mail, expiry__gt=datetime.now()):
-            if OTP.objects.get(mail=mail).otp == otp:
-                register(POST_DATA)
-                OTP.objects.get(mail=mail).delete()
-                return response({"success": "OTP Verified and Account Created!"}, 201)
+            if OTP.objects.get(mail=mail).otp == otp:                    
+                if register(POST_DATA):
+                    OTP.objects.get(mail=mail).delete()
+                    return response({"success": "OTP Verified and Account Created!"}, 201)
+                else:
+                    return response({"error":"Invalid Request!"}, 403)
         else:
             OTP.objects.get(mail=mail).delete()
 
     return response({"error":"OTP Validation Failed"}, 403)
-    # fname = POST_DATA["fname"]
-    # lname = POST_DATA["lname"]
-    # username = POST_DATA["username"]
-    # passw = POST_DATA["passw"]
