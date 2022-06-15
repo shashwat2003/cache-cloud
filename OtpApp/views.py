@@ -43,7 +43,7 @@ WARNING: This is an auto-generated mail! Please DO-NOT reply to this mail.
 
     '''
     if(not send_mail(subject=subject, message=message, from_email=settings.EMAIL_HOST_USER, recipient_list=[mail])):
-        return response({"error":"Problem sending mail!"}, 500)
+        return response({"error":"Problem sending mail! Please re-check your mail or try again later!"}, 500)
     else:
         expiry = datetime.now() + timedelta(minutes=10)
         OTP.objects.create(mail=mail, otp=otp, expiry=expiry)

@@ -20,4 +20,6 @@ urlpatterns = [
     # path('admin/', admin.site.urls),
     path('otp/', include('OtpApp.urls')),
     path('user/', include('UserApp.urls')),
+    path('folder/', include('FolderApp.urls')),
+    path('file/', include('FileApp.urls')),
 ]
