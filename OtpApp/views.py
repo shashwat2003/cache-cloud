@@ -20,7 +20,7 @@ def generate(request: HttpRequest):
     mail = POST_DATA["mail"]
     greet = POST_DATA["greet"]
     if User.objects.filter(email=mail).exists():
-        return response({"error":"Mail Already Registered!"}, 403)
+        return response({"error":"Mail Already Registered!"}, 400)
     if OTP.objects.filter(mail=mail).exists():
         OTP.objects.get(mail=mail).delete()
     otp = random.randint(1000, 9999)
@@ -63,8 +63,8 @@ def verify(request: HttpRequest):
                     OTP.objects.get(mail=mail).delete()
                     return response({"success": "OTP Verified and Account Created!"}, 201)
                 else:
-                    return response({"error":"Invalid Request!"}, 403)
+                    return response({"error":"Invalid Request!"}, 400)
         else:
             OTP.objects.get(mail=mail).delete()
 
-    return response({"error":"OTP Validation Failed"}, 403)
+    return response({"error":"OTP Validation Failed"}, 400)
