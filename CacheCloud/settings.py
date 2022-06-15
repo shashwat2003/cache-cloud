@@ -27,7 +27,7 @@ SECRET_KEY = 'aao$d3wmgl4i89!8zgl%4zz6(c_n#bk(iszzev0j#u7v#!032-'
 DEBUG = True
 
 # Custom Settings
-
+MEDIA_ROOT = '/home/shashwat2003/CacheCloudServerData/'
 ALLOWED_HOSTS = ["*"]
 SESSION_COOKIE_SAMESITE = None
 SESSION_COOKIE_SECURE = True
@@ -76,7 +76,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'UserApp',
-    'OtpApp'
+    'OtpApp',
+    'FileApp',
+    'FolderApp',
 ]
 
 MIDDLEWARE = [

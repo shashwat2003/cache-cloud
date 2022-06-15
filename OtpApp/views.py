@@ -2,6 +2,7 @@ import json, random
 from django.http import HttpRequest, JsonResponse
 from django.core.mail import send_mail
 from django.conf import settings
+from pytz import UTC
 
 from .models import OTP
 from UserApp.views import register
@@ -51,13 +52,13 @@ WARNING: This is an auto-generated mail! Please DO-NOT reply to this mail.
 def verify(request: HttpRequest):
     if request.method != "POST":
         return response({"error":request.method+" NOT ALLOWED!"}, 405)
-        
     POST_DATA = json.loads(request.body)
+    print(POST_DATA)
     mail = POST_DATA["mail"]
     otp = int(POST_DATA["otp"])
 
     if OTP.objects.filter(mail=mail).exists():
-        if OTP.objects.filter(mail=mail, expiry__gt=datetime.now()):
+        if OTP.objects.filter(mail=mail, expiry__gt=datetime.now(tz=UTC)):
             if OTP.objects.get(mail=mail).otp == otp:                    
                 if register(POST_DATA):
                     OTP.objects.get(mail=mail).delete()
