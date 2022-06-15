@@ -40,7 +40,7 @@ def login(request: HttpRequest):
     passw = POST_DATA["passw"]
 
     user = authenticate(request=request, username=username, password=passw)
-    if user is not None:
+    if user is not None and user.role == User.USER:
         return response({"success":"Login Sucess!"})
     else:
         return response({"error":"Invalid Username or Password!"}, 400)

@@ -32,11 +32,11 @@ ALLOWED_HOSTS = ["*"]
 SESSION_COOKIE_SAMESITE = None
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = False
-
+# CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
 'http://localhost:5500',
-'http://127.0.0.1:5500',
+'http://127.0.0.1:5501',
 'http://10.21.84.51:5500',
 'http://localhost:3000',
 ]
@@ -67,6 +67,7 @@ EMAIL_USE_TLS = True
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'sslserver',
     'django.contrib.admin',
     'django.contrib.auth',
