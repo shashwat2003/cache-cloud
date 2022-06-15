@@ -3,7 +3,7 @@ from UserApp.models import User
 from FolderApp.models import Folder
 # Create your models here.
 def get_user_directory(instance, filename):
-        return 'user_{0}/folder_{1}/'.format(instance.folder.user.id, instance.folder.id)
+        return 'user_{0}/folder_{1}/{2}'.format(instance.folder.user.id, instance.folder.id, filename)
 
 class File(models.Model):
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE)

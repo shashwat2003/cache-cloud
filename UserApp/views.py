@@ -1,5 +1,7 @@
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import render
+
+from FileApp.models import File
 from .models import User
 from FolderApp.models import Folder
 import re, json
@@ -46,6 +48,20 @@ def login(request: HttpRequest):
         username = id
     user = authenticate(request=request, username=username, password=passw)
     if user is not None and user.role == User.USER:
+        auth_login(request=request, user=user)
         return response({"success":"Login Sucess!"})
     else:
         return response({"error":"Invalid Username or Password!"}, 400)
+
+
+def dashboard(request: HttpRequest):
+    if request.method != "GET":
+        return response({"error":request.method+"NOT ALLOWED"}, 405)
+    
+    if not request.user.is_authenticated:
+        return response({"error":"AUTHENTICATION FAILED"}, 403)
+    
+    root = Folder.objects.get(user=request.user, parent__isnull=True)
+    folders = list(Folder.objects.filter(user=request.user, parent=root).values())
+    files = list(File.objects.filter(folder=root).values())
+    return response({"folders":folders, "files":files})
