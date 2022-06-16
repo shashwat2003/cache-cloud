@@ -10,5 +10,11 @@ class File(models.Model):
     file = models.FileField(upload_to=get_user_directory)
     uploaded_at = models.DateTimeField(auto_now_add=True)
     accessed_at = models.DateTimeField(null=True)
-    
 
+class Catogery(models.Model):
+    name = models.CharField(max_length=50)
+    size = models.BigIntegerField()
+
+class MiMeType(models.Model):
+    catogery = models.ForeignKey(Catogery, on_delete=models.CASCADE)
+    type = models.CharField(max_length=125, primary_key=True)

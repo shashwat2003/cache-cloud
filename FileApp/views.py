@@ -1,7 +1,7 @@
 import json
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import render
-
+from hurry.filesize import size
 from FolderApp.models import Folder
 from .models import File
 
@@ -20,7 +20,8 @@ def upload(request: HttpRequest):
     folder = POST_DATA["folder"]
     file = request.FILES["file"]
     if Folder.objects.filter(id=folder).exists() and Folder.objects.get(id=folder).user == request.user:
-        File.objects.create(file=file, folder=Folder.objects.get(id=folder))
+        print(size(file.size))
+        # File.objects.create(file=file, folder=Folder.objects.get(id=folder))
         return response({"success":"Upload Success"})
     else:
         return response({"error":"Invalid Folder!"}, 400)

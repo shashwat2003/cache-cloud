@@ -36,7 +36,7 @@ SESSION_COOKIE_HTTPONLY = False
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
 'http://localhost:5500',
-'http://127.0.0.1:5501',
+'http://127.0.0.1:5500',
 'http://10.21.84.51:5500',
 'http://localhost:3000',
 ]

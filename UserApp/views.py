@@ -53,6 +53,13 @@ def login(request: HttpRequest):
     else:
         return response({"error":"Invalid Username or Password!"}, 400)
 
+def logout(request:HttpRequest):
+    if request.user.is_authenticated:
+        auth_logout(request)
+        return response({"success":"Logout Sucessfull!"})
+    else:
+        return response({"error":"Unauthorised Access!"}, 401)
+
 
 def dashboard(request: HttpRequest):
     if request.method != "GET":
