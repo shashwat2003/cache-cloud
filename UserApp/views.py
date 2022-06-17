@@ -1,11 +1,10 @@
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import render
-
 from FileApp.models import File
 from .models import User
 from FolderApp.models import Folder
 import re, json
-
+from django.db.models import Count
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 # Create your views here.
 def response(obj, code=200):
@@ -69,6 +68,6 @@ def dashboard(request: HttpRequest):
         return response({"error":"AUTHENTICATION FAILED"}, 403)
     
     root = Folder.objects.get(user=request.user, parent__isnull=True)
-    folders = list(Folder.objects.filter(user=request.user, parent=root).values())
+    folders = list(Folder.objects.filter(user=request.user, parent=root).annotate(files=Count('file')).values())
     files = list(File.objects.filter(folder=root).values())
-    return response({"folders":folders, "files":files})
+    return response({"folders":folders, "files":files, "folderId": root.id})

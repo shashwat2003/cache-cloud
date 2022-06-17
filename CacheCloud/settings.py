@@ -39,6 +39,7 @@ CORS_ORIGIN_WHITELIST = [
 'http://127.0.0.1:5500',
 'http://10.21.84.51:5500',
 'http://localhost:3000',
+"http://10.21.84.92:5500"
 ]
 
 AUTH_USER_MODEL = "UserApp.User"

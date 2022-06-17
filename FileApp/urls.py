@@ -3,4 +3,5 @@ from .views import *
 
 urlpatterns = [
     path("upload/", upload),
+    path("max_limit/", max_limit),
 ]
