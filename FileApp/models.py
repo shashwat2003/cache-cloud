@@ -10,8 +10,8 @@ class File(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
     accessed_at = models.DateTimeField(null=True)
     catogery = models.ForeignKey('Catogery',on_delete=models.DO_NOTHING)
-    filename = models.CharField(max_length=300, default=None, null=True)
-    size = models.CharField(max_length=20,default=None, null=True)
+    filename = models.CharField(max_length=300)
+    size = models.CharField(max_length=20)
 
 class Catogery(models.Model):
     name = models.CharField(max_length=50)
