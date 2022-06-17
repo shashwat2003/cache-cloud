@@ -6,6 +6,7 @@ from pytz import UTC
 from .models import Folder
 from FileApp.models import File
 from django.db.models import Count
+from UserApp.models import User
 # Create your views here.
 def response(obj, code=200):
     return JsonResponse(obj, status=code, safe=False)
@@ -14,7 +15,7 @@ def create(request: HttpRequest):
     if request.method != "POST":
         return response({"error":request.method+" NOT ALLOWED!"}, 405)
 
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or request.user.role != User.USER:
         return response({"error":"AUTHENTICATION FAILURE!"}, 403)
 
     POST_DATA = json.loads(request.body)
@@ -34,7 +35,7 @@ def get_data(request: HttpRequest):
     if request.method != "POST":
         return response({"error":request.method+"NOT ALLOWED"}, 405)
 
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or request.user.role != User.USER:
         return response({"error":"AUTHENTICATION FAILED"}, 403)
     POST_DATA = json.loads(request.body)
     folder = POST_DATA["folder"]
@@ -43,9 +44,15 @@ def get_data(request: HttpRequest):
     if folder.exists() and folder[0].user == request.user:
         # print(size(file.size))
         folder = folder[0]
-        folders = list(Folder.objects.filter(user=request.user, parent=folder).annotate(files=Count('file')).values())
+        if folder.name != "$ROOT":
+            folders = [{"name":"...","id":folder.parent.id}] + list(Folder.objects.filter(user=request.user, parent=folder).annotate(files=Count('file')).values())
+            folderName = folder.name
+            
+        else:
+            folders = list(Folder.objects.filter(user=request.user, parent=folder).annotate(files=Count('file')).values())
+            folderName = "Home"
         files = list(File.objects.filter(folder=folder).values())
-        return response({"folders":folders, "files":files, "folderId": folder.id})
+        return response({"folders":folders, "files":files, "folderId": folder.id, "folderName":folderName})
         
     else:
         return response({"error":"Invalid Folder!"}, 400)

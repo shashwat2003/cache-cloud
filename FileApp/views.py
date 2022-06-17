@@ -7,6 +7,7 @@ from pytz import UTC
 from FolderApp.models import Folder
 from .models import Catogery, File, MiMeType
 from hurry.filesize import size
+from UserApp.models import User
 
 # Create your views here.
 def response(obj, code=200):
@@ -16,7 +17,7 @@ def upload(request: HttpRequest):
     if request.method != "POST":
         return response({"error":request.method+"NOT ALLOWED"}, 405)
     
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or request.user.role != User.USER:
         return response({"error":"AUTHENTICATION FAILED"}, 403)
 
     POST_DATA = request.POST
@@ -55,4 +56,15 @@ def max_limit(request: HttpRequest):
             size = Catogery.objects.get(name="others").catogery.size
             
     return response({"max_limit":size})
+
+def catogery_list(request: HttpRequest):
+    if request.method != "GET":
+        return response({"error":request.method+"NOT ALLOWED"}, 405)
+    
+    if not request.user.is_authenticated:
+        return response({"error":"AUTHENTICATION FAILED"}, 403)
+
+    catogeries = list(Catogery.objects.values())
+
+    return response({"list": catogeries})
     

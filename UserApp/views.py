@@ -53,7 +53,7 @@ def login(request: HttpRequest):
         return response({"error":"Invalid Username or Password!"}, 400)
 
 def logout(request:HttpRequest):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.role == User.USER:
         auth_logout(request)
         return response({"success":"Logout Sucessfull!"})
     else:
@@ -64,10 +64,11 @@ def dashboard(request: HttpRequest):
     if request.method != "GET":
         return response({"error":request.method+"NOT ALLOWED"}, 405)
     
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or request.user.role != User.USER:
         return response({"error":"AUTHENTICATION FAILED"}, 403)
     
     root = Folder.objects.get(user=request.user, parent__isnull=True)
     folders = list(Folder.objects.filter(user=request.user, parent=root).annotate(files=Count('file')).values())
     files = list(File.objects.filter(folder=root).values())
-    return response({"folders":folders, "files":files, "folderId": root.id})
+    user = {"name": request.user.first_name + " " + request.user.last_name}
+    return response({"folders":folders, "files":files, "folderId": root.id, "user_details": user, "folderName": "Home"})

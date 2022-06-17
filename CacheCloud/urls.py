@@ -22,4 +22,5 @@ urlpatterns = [
     path('user/', include('UserApp.urls')),
     path('folder/', include('FolderApp.urls')),
     path('file/', include('FileApp.urls')),
+    path('admin/', include('AdminApp.urls')),
 ]
