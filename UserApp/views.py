@@ -1,11 +1,15 @@
+from datetime import datetime
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import render
+from pytz import UTC
 from FileApp.models import File
+from FileApp.views import delete
 from .models import User
 from FolderApp.models import Folder
 import re, json
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from hurry.filesize import size
 # Create your views here.
 def response(obj, code=200):
     return JsonResponse(obj, status=code, safe=False)
@@ -68,7 +72,25 @@ def dashboard(request: HttpRequest):
         return response({"error":"AUTHENTICATION FAILED"}, 403)
     
     root = Folder.objects.get(user=request.user, parent__isnull=True)
-    folders = list(Folder.objects.filter(user=request.user, parent=root).annotate(files=Count('file')).values())
-    files = list(File.objects.filter(folder=root).values())
+    folders = list(Folder.objects.filter(user=request.user, parent=root, deleted=False).annotate(files=Count('file')).values())
+    # files = list(File.objects.filter(folder=root).values())
+    # files = list(File.objects.filter(folder=root).annotate(size_format=size(Value('size'))).values())
+    files = []
+    for i in File.objects.filter(folder=root, deleted=False).values():
+        i["size"] = size(i["size"])
+        files.append(i)
+    storage = File.objects.filter(folder__user=request.user).aggregate(sum=Sum('size'))["sum"]
     user = {"name": request.user.first_name + " " + request.user.last_name}
-    return response({"folders":folders, "files":files, "folderId": root.id, "user_details": user, "folderName": "Home"})
+    return response({"folders":folders, "files":files, "folderId": root.id, "user_details": user, "folderName": "Home","usedStorage":storage,"maxStorage":1073741824})
+
+def trash(request: HttpRequest):
+    if request.method != "GET":
+        return response({"error":request.method+"NOT ALLOWED"}, 405)
+
+    if not request.user.is_authenticated or request.user.role != User.USER:
+        return response({"error":"AUTHENTICATION FAILED"}, 403)
+
+    files = list(File.objects.filter(folder__user=request.user, deleted=True, expiry__gt=datetime.now(tz=UTC)).values('expiry','filename','size'))
+    folder = list(Folder.objects.filter(user=request.user, deleted=True, expiry__gt=datetime.now(tz=UTC)).values('expiry'))
+
+    return response({"files":files, "folder":folder})

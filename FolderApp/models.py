@@ -9,3 +9,5 @@ class Folder(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now_add=True)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
+    deleted = models.IntegerField(default=0)
+    expiry = models.DateTimeField(default=None, null=True)

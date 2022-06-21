@@ -47,4 +47,11 @@ def set_catogery_size(request: HttpRequest):
         return response({"success":"Catogery Size Updated Successfully!"})
     else:
         return response({"error":"Catogery does not exists!"}, 400)
+
+def logout(request:HttpRequest):
+    if request.user.is_authenticated and request.user.role == User.ADMIN:
+        auth_logout(request)
+        return response({"success":"Logout Sucessfull!"})
+    else:
+        return response({"error":"Unauthorised Access!"}, 401)
     

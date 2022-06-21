@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Download Check</title>
+  </head>
+  <body>
+    <script>
+      function download() {
+        id = document.getElementById("id").value;
+        fetch("https://0.0.0.0:8000/file/download/", {
+          method: "POST",
+          body: JSON.stringify({ id: id }),
+          responseType: "blob",
+        }).then((response) => {
+          response.blob().then((blob) => {
+            console.log(response);
+
+            console.log(blob);
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            const link = document.createElement("a");
+            // link.href = url;
+            link.setAttribute("content-type", "blob.type");
+            console.log(link);
+            document.body.appendChild(link);
+            // link.click();
+          });
+        });
+      }
+    </script>
+    <input type="number" id="id" />
+    <button onclick="download()">Download</button>
+  </body>
+</html>

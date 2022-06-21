@@ -34,6 +34,10 @@ SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = False
 # CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+CORS_EXPOSE_HEADERS = [
+    "Content-Disposition",
+    "Content-Type"
+]
 CORS_ORIGIN_WHITELIST = [
 'http://localhost:5500',
 'http://127.0.0.1:5500',
